@@ -1,4 +1,4 @@
-\begin{thebibliography}{0}
+\begin{thebibliography}{3}
 \providecommand{\natexlab}[1]{#1}
 \providecommand{\url}[1]{#1}
 \expandafter\ifx\csname urlstyle\endcsname\relax\else
@@ -10,5 +10,24 @@
   \def\doi#1{\href{https://doi.org/#1}{\nolinkurl{#1}}}
   \let\eprint\href
 \fi
+
+\bibitem[Kuszmaul(2022)]{kuszmaul2022hash}
+KUSZMAUL W.
+\newblock A hash table without hash functions, and how to get the most out of
+  your random bits\allowbreak[C]//\allowbreak
+2022 IEEE 63rd Annual Symposium on Foundations of Computer Science (FOCS).
+\newblock IEEE, 2022: 991-1001.
+
+\bibitem[Patrascu et~al.(2014)Patrascu and Thorup]{patrascu2014dynamic}
+PATRASCU M, THORUP M.
+\newblock Dynamic integer sets with optimal rank, select, and predecessor
+  search\allowbreak[C]//\allowbreak
+2014 IEEE 55th Annual Symposium on Foundations of Computer Science (FOCS).
+\newblock IEEE, 2014: 166-175.
+
+\bibitem[McDiarmid(1989)]{mcdiarmid1989bounded}
+MCDIARMID C.
+\newblock On the method of bounded differences\allowbreak[J].
+\newblock Surveys in Combinatorics, 1989, 141: 148-188.
 
 \end{thebibliography}
