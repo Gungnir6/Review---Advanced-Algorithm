@@ -105,7 +105,7 @@
 \zihao{5-}{
 \setlength{\baselineskip}{16pt}\selectfont{
 \noindent {\heiti 摘\quad 要\quad }
-哈希表是字典问题中最常用的随机化数据结构之一，通常依赖哈希函数将键映射到存储位置。然而，当希望获得极低失败概率时，传统构造会受到显式哈希函数族能力的限制。Kuszmaul 在论文 ``A Hash Table Without Hash Functions, and How to Get the Most Out of Your Random Bits'' 中提出了一种不同思路：不再直接使用哈希函数，而是将随机性嵌入到数据结构内部。本文围绕该论文的主要结构展开综述，重点介绍 rotated radix trie 的基本思想、ball/bin/load 的分析视角，以及 amplified rotated trie 降低失败概率的方法。\par}}
+哈希表是字典问题中最常用的随机化数据结构之一，通常依赖哈希函数将键映射到存储位置。然而，当希望获得极低失败概率时，传统构造会受到显式哈希函数族能力的限制。Kuszmaul 在论文 ``A Hash Table Without Hash Functions, and How to Get the Most Out of Your Random Bits'' 中提出了一种不同思路：不再直接使用哈希函数，而是将随机性嵌入到数据结构内部。本文围绕该论文的主要结构展开综述，重点介绍 rotated radix trie 的基本思想、amplified rotated trie 降低失败概率的方法，以及 budget rotated trie 压缩随机比特数量的思路。\par}}
 
 \vspace {5mm}
 
@@ -204,7 +204,15 @@ budget rotated trie 是论文的另一个方向。与 amplified rotated trie 追
 
 为了减少随机比特的使用，budget rotated trie 不再为大量内部节点直接生成完全独立的随机旋转量。一个基本做法是减少真正需要显式创建的内部节点数量：当某个子树规模较小时，可以先用 dynamic fusion node 直接存储，只有当子树规模超过阈值后才创建新的内部节点。
 
-在此基础上，论文进一步改变 ball 到 bin 的映射方式，并引入有限独立哈希函数以及 gradually-increasing-independence hash functions。后者的作用是用较少的随机种子产生足够好的负载均衡效果。与 amplified rotated trie 相比，budget rotated trie 牺牲了极低失败概率，换取了更少的随机比特使用量。
+在此基础上，论文进一步改变 ball 到 bin 的映射方式。基础 rotated trie 使用 $\phi(s,c)=(c+r_s)\bmod n$，而 budget rotated trie 将全部 bin 分为 $n^\delta$ 个组，每组大小为 $n^{1-\delta}$，并使用
+
+\begin{equation}
+\psi(s,c)=((c+a_s)\bmod n^\delta)\cdot n^{1-\delta}+b_s
+\end{equation}
+
+进行映射。其中 $a_s$ 用来决定 ball 被分配到哪个组，$b_s$ 用来决定它在组内的具体位置。这样的拆分使得两类随机参数可以用不同方法生成：$a_s$ 可由常数独立哈希函数产生，用于控制各组中的 ball 数量；$b_s$ 则由具有负载均衡性质的 gradually-increasing-independence hash functions 产生，用于控制组内最大负载。
+
+gradually-increasing-independence hash functions 的直接求值时间并非常数，但在 budget rotated trie 中，它们主要作为生成随机参数的工具。由于新的内部节点只会在对应子树规模达到 $polylog(n)$ 后创建，相关初始化成本可以被摊销到之前的插入过程中。这样一来，结构仍然能够维持高概率常数时间操作，同时显著减少随机比特使用量。
 
 \vspace {5mm}
 \centerline
