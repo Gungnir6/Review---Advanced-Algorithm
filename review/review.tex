@@ -105,7 +105,7 @@
 \zihao{5-}{
 \setlength{\baselineskip}{16pt}\selectfont{
 \noindent {\heiti 摘\quad 要\quad }
-哈希表是字典问题中最常用的随机化数据结构之一，通常依赖哈希函数将键映射到存储位置。然而，当希望获得极低失败概率时，传统构造会受到显式哈希函数族能力的限制。Kuszmaul 在论文 ``A Hash Table Without Hash Functions, and How to Get the Most Out of Your Random Bits'' 中提出了一种不同思路：不再直接使用哈希函数，而是将随机性嵌入到数据结构内部。本文围绕该论文的主要结构展开综述，重点介绍 rotated radix trie 的基本思想、amplified rotated trie 降低失败概率的方法，以及 budget rotated trie 压缩随机比特数量的思路。\par}}
+哈希表是字典问题中最常用的随机化数据结构之一，通常依赖哈希函数将键映射到存储位置。然而，当希望获得极低失败概率时，传统构造会受到显式哈希函数族能力的限制。Kuszmaul 在论文 ``A Hash Table Without Hash Functions, and How to Get the Most Out of Your Random Bits'' 中提出了一种不同思路：不再直接使用哈希函数，而是将随机性嵌入到数据结构内部。本文围绕该论文的主要结构展开综述，重点介绍 rotated radix trie 的基本思想、amplified rotated trie 降低失败概率的方法、budget rotated trie 压缩随机比特数量的思路，以及相关结构在空间效率上的意义。\par}}
 
 \vspace {5mm}
 
@@ -213,6 +213,32 @@ budget rotated trie 是论文的另一个方向。与 amplified rotated trie 追
 进行映射。其中 $a_s$ 用来决定 ball 被分配到哪个组，$b_s$ 用来决定它在组内的具体位置。这样的拆分使得两类随机参数可以用不同方法生成：$a_s$ 可由常数独立哈希函数产生，用于控制各组中的 ball 数量；$b_s$ 则由具有负载均衡性质的 gradually-increasing-independence hash functions 产生，用于控制组内最大负载。
 
 gradually-increasing-independence hash functions 的直接求值时间并非常数，但在 budget rotated trie 中，它们主要作为生成随机参数的工具。由于新的内部节点只会在对应子树规模达到 $polylog(n)$ 后创建，相关初始化成本可以被摊销到之前的插入过程中。这样一来，结构仍然能够维持高概率常数时间操作，同时显著减少随机比特使用量。
+
+\section{\heiti 空间效率}
+
+除了操作时间和失败概率外，空间效率也是字典结构中的重要指标。对于从全集 $U$ 中存储 $n$ 个键的集合，任意字典都需要至少
+
+\begin{equation}
+B(|U|,n)=\log \binom{|U|}{n}
+\end{equation}
+
+比特的信息量。因此，succinct dictionary 的目标是将空间控制在接近该信息论下界的范围内，通常写作 $(1+o(1))B(|U|,n)$。
+
+Kuszmaul 的论文中进一步指出，rotated trie 相关结构可以通过黑盒转换得到 succinct dictionary，并且基本保留原结构的概率保证。该转换与 Raman 和 Rao 的 succinct dynamic dictionary 工作有关\cite{raman2003succinct}，其中 budget rotated trie 也作为关键组件出现。
+
+从综述角度看，这一部分说明论文的贡献并不只体现在失败概率上。amplified rotated trie 强调极低失败概率，budget rotated trie 强调随机比特节省，而 succinct 化则进一步说明这些结构有机会接近最优空间使用。
+
+\section{\heiti 结构关系与讨论}
+
+综合来看，论文中的几个结构可以理解为围绕 rotated radix trie 展开的三个方向。
+
+首先，rotated radix trie 是基础结构。它通过随机旋转节点数组，将传统哈希函数中的随机性转移到数据结构内部，说明“不直接使用哈希函数”仍然可以实现随机化字典。
+
+其次，amplified rotated trie 关注失败概率。它在基础结构上引入 overflow ball 和辅助结构，并通过有界差分方法控制溢出规模，从而获得远强于普通高概率保证的失败概率。
+
+最后，budget rotated trie 关注随机比特数量。它通过减少内部节点、改变映射方式以及使用伪随机负载均衡工具，在保持 $1/\mathrm{poly}(n)$ 失败概率的同时，把随机比特数量压到接近对数级别。
+
+这三者体现了同一技术思想在不同目标下的展开：空间、随机性和失败概率之间并不是孤立的指标，而是可以通过数据结构内部随机化进行统一权衡。
 
 \vspace {5mm}
 \centerline
